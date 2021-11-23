@@ -4,8 +4,6 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
-import IconButton from '@mui/material/IconButton';
-import InfoIcon from '@mui/icons-material/Info';
 import Button from '@mui/material/Button';
 import {useNavigate} from 'react-router-dom';
 
@@ -16,7 +14,6 @@ const MovieList  = () => {
   useEffect(() => {
     getMovieShows().then((response) => {
       setList(response)
-      console.log(response)
     })
   }, [])
   const Shows = (shows) => {
@@ -31,7 +28,7 @@ const MovieList  = () => {
         rooms[item.schedule].append(item.room);
       }
     })
-    console.log(rooms)
+
     schedules.forEach(schedule=> {
       if (rooms[schedule]) {
         subtitle.push(`${schedule}: ${rooms[schedule].map(room => `SALA${room}`).join(',')}`)
@@ -68,7 +65,10 @@ const MovieList  = () => {
             title={item.name}
             subtitle={
             <div>
-              {Shows(item.shows).map(show => <p>{show}</p>)}
+              {Shows(item.shows).map(show => 
+              <p className="show" onClick={() => navigate(`/reservate/${item.movie_id}`)}>
+                {show}
+                </p>)}
             </div>}
           />
         </ImageListItem>
