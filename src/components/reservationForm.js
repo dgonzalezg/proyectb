@@ -11,28 +11,66 @@ import Select from '@mui/material/Select';
 import Container from '@mui/material/Container';
 import FormLabel from '@mui/material/FormLabel';
 import LoadingButton from '@mui/lab/LoadingButton';
+import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const ReservationForm = () => {
   const { movieId } = useParams();
   const [rooms, setRooms] = useState([])
   const [room, setRoom] = useState('')
   const [row, setRow] = useState('')
-  const [seat, setSeat] = useState('')
-  const [loading, setLoading] = useState('')
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const payload = {
-    }
-  }
+  const [seats, setSeats] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [day, setDay] = useState('')
+  const [error, setError] = useState(false)
+  const [success, setSuccess] = useState(false)
+
   useEffect(() => {
     getMovieShows(movieId).then(data => {
-      
       const movie = data.filter(movie => movie.movie_id === Number(movieId))
-      console.log(movie)
-      const list = movie[0].shows.map(show =>  `Sala ${show.room}`)
+      const list = movie[0].shows.map(show =>  [show.room, show.show_id])
       setRooms(list)
     })
   }, [movieId])
+  const handleSeats = ({target}) => {
+    const {name} = target;
+    if (seats.includes(name)) {
+      setSeats(seats.filter(seat => seat !== name))
+    }
+    else {
+      setSeats([...seats, name])
+    }
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setLoading(true)
+    const reservations = []
+    seats.forEach(seat => {
+      const payload = {
+        show_id:room[1],
+        row,
+        seat,
+        day
+  
+      }
+      reservations.push(createReservation(payload))
+    })
+    Promise.all(reservations)
+    .then(() => {
+      setLoading(false)
+      setSuccess(true)
+      setRoom('')
+      setRow('')
+      setSeats([])
+      setDay('')
+    })
+    .catch(() => {
+      setLoading(false)
+      setError(true)
+    })
+  }
+  
   return (
     <Container
       maxWidth="lg"
@@ -43,7 +81,7 @@ const ReservationForm = () => {
         textAlign: 'left',
       }}
     >
-      <form>
+      <form onSubmit={handleSubmit}>
         <FormControl fullWidth margin="dense">
           <InputLabel>Sala</InputLabel>
           <Select
@@ -53,7 +91,7 @@ const ReservationForm = () => {
           >
             {rooms.length && rooms.map(room => {
               return (
-                <MenuItem value={room[room.length-1]}>{room}</MenuItem>
+                <MenuItem value={room} key={`Sala ${room[0]}`}>{`Sala ${room[0]}`}</MenuItem>
               )
             })}
           </Select>
@@ -67,7 +105,7 @@ const ReservationForm = () => {
           >
             {['A','B','C','D'].map(row => {
               return (
-                <MenuItem value={row}>{row}</MenuItem>
+                <MenuItem value={row} key={row}>{row}</MenuItem>
               )
             })}
           </Select>
@@ -79,7 +117,7 @@ const ReservationForm = () => {
               <FormControlLabel
                 key={`seat${seat}`}
                 control={
-                  <Checkbox onChange={(e) => setSeat(e.target.name)} name={seat+1} />
+                  <Checkbox onChange={handleSeats} name={`${seat+1}`}/>
                 }
                 label={seat+1}
                 labelPlacement="top"
@@ -87,10 +125,38 @@ const ReservationForm = () => {
             )
           })}
         </FormGroup>
-        <LoadingButton loading={loading} variant="contained" type="submit">
-            Reservar
-        </LoadingButton>
+        <div style={{display:'flex',flexDirection:'column'}}>
+          <TextField
+              required
+              id="day"
+              label="Escríba el día de la función (YY-MM-DD)"
+              value={day}
+              onChange={(e) => setDay(e.target.value)}
+              margin="dense"
+            />
+          <LoadingButton loading={loading} variant="contained" type="submit">
+              Reservar
+          </LoadingButton>
+        </div>
       </form>
+      <Snackbar
+        open={error}
+        autoHideDuration={5000}
+        onClose={() => setError(false)}
+      >
+        <Alert onClose={() => setError(false)} severity="error" sx={{ width: '100%' }}>
+          Ha ocurrido un error
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={success}
+        autoHideDuration={5000}
+        onClose={() => setSuccess(false)}
+      >
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          Reserva Exitosa
+        </Alert>
+      </Snackbar>
     </Container>
     )
 }

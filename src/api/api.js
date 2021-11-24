@@ -18,6 +18,6 @@ export const createShow = async (payload) => {
 }
 
 export const createReservation = async (payload) => {
-  const {data} = await axios.post(`${url}/reservation`, payload)
+  const {data} = await axios.post(`${url}/reservations`, payload)
   return data;
 }
