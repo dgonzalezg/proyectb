@@ -6,15 +6,19 @@ import ListSubheader from '@mui/material/ListSubheader';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import Button from '@mui/material/Button';
 import {useNavigate} from 'react-router-dom';
+import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export const schedules = ['MATINE', 'TANDA', 'NOCHE']
 const MovieList  = () => {
   const navigate = useNavigate();
   const [list, setList] = useState([]);
+  const [loading,setLoading] = useState(true);
   useEffect(() => {
     getMovieShows().then((response) => {
       setList(response)
-    })
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }, [])
   const Shows = (shows) => {
     const rooms = {}
@@ -25,7 +29,7 @@ const MovieList  = () => {
         rooms[item.schedule] = [item.room]
       }
       else {
-        rooms[item.schedule].append(item.room);
+        rooms[item.schedule].push(item.room);
       }
     })
 
@@ -40,7 +44,16 @@ const MovieList  = () => {
     )
   }
   return (
-    <div>
+    <Container
+      maxWidth="sm"
+      sx={{
+        borderRadius: '1em',
+        bgcolor: 'wheat',
+        padding: '1em 0 1em 0',
+        textAlign: 'cener',
+        marginTop: '2em'
+      }}
+    >
       <h1>DCCinema</h1>
       <Button
         variant="contained"
@@ -49,7 +62,7 @@ const MovieList  = () => {
       >
         Registrar Película
       </Button>
-      <ImageList sx={{ width: 500, height: 450 }}>
+      {!loading ? <ImageList sx={{ width: 500, height: 450 }}>
       <ImageListItem key="Subheader" cols={2}>
         <ListSubheader component="div">Cartelera</ListSubheader>
       </ImageListItem>
@@ -66,7 +79,7 @@ const MovieList  = () => {
             subtitle={
             <div>
               {Shows(item.shows).map(show => 
-              <p className="show" onClick={() => navigate(`/reservate/${item.movie_id}`)}>
+              <p key={show} className="show" onClick={() => navigate(`/reservate/${item.movie_id}/${show.split(':')[0]}`)}>
                 {show}
                 </p>)}
             </div>}
@@ -74,7 +87,9 @@ const MovieList  = () => {
         </ImageListItem>
       ))}
     </ImageList>
-    </div>
+    : <CircularProgress/>
+    }
+    </Container>
   )
 }
 

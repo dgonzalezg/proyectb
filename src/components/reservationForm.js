@@ -16,7 +16,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 const ReservationForm = () => {
-  const { movieId } = useParams();
+  const { movieId, schedule } = useParams();
   const [rooms, setRooms] = useState([])
   const [room, setRoom] = useState('')
   const [row, setRow] = useState('')
@@ -29,10 +29,11 @@ const ReservationForm = () => {
   useEffect(() => {
     getMovieShows(movieId).then(data => {
       const movie = data.filter(movie => movie.movie_id === Number(movieId))
-      const list = movie[0].shows.map(show =>  [show.room, show.show_id])
+      const list = movie[0].shows.filter(show => show.schedule === schedule)
+      .map(show =>  [show.room, show.show_id])
       setRooms(list)
     })
-  }, [movieId])
+  }, [movieId, schedule])
   const handleSeats = ({target}) => {
     const {name} = target;
     if (seats.includes(name)) {
@@ -79,6 +80,7 @@ const ReservationForm = () => {
         bgcolor: 'white',
         padding: '1em 0 1em 0',
         textAlign: 'left',
+        marginTop: '2em'
       }}
     >
       <form onSubmit={handleSubmit}>
