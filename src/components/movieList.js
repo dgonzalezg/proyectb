@@ -54,7 +54,7 @@ const MovieList  = () => {
         marginTop: '2em'
       }}
     >
-      <h1>DCCinema</h1>
+      <h1 id="title">DCCinema</h1>
       <Button
         variant="contained"
         sx={{ mt: 3, mb: 2 }}
