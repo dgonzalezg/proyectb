@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useParams } from "react-router-dom";
-import { getMovieShows, createReservation } from '../api/api';
+import { getMovieShows, createReservation, getReservations } from '../api/api';
 import InputLabel from '@mui/material/InputLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
@@ -25,7 +25,7 @@ const ReservationForm = () => {
   const [day, setDay] = useState('')
   const [error, setError] = useState(false)
   const [success, setSuccess] = useState(false)
-
+  const [reservations, setReservations] = useState([])
   useEffect(() => {
     getMovieShows(movieId).then(data => {
       const movie = data.filter(movie => movie.movie_id === Number(movieId))
@@ -43,6 +43,13 @@ const ReservationForm = () => {
       setSeats([...seats, name])
     }
   }
+  const handleRooms = (value) => {
+    setRoom(value)
+    getReservations(value[1]).then((data) => {
+      setReservations(data)
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     setLoading(true)
@@ -71,7 +78,19 @@ const ReservationForm = () => {
       setError(true)
     })
   }
-  
+  const rowA = reservations.filter(r => r.row === "A")
+  const rowB = reservations.filter(r => r.row === "B")
+  const rowC = reservations.filter(r => r.row === "C")
+  const rowD = reservations.filter(r => r.row === "D")
+  const freeSeats = (row) => {
+    console.log(row)
+    const occupied = row.map(r => r.seat)
+    const free = [...Array(13).keys()].filter(seat => !occupied.includes(`${seat}`)).filter(seat => seat !== 0)
+    if (free.length  === 12) {
+      return 'Todos los asientos estan disponibles'
+    }
+    return free.join(', ')
+  }
   return (
     <Container
       maxWidth="lg"
@@ -83,13 +102,23 @@ const ReservationForm = () => {
         marginTop: '2em'
       }}
     >
+      {reservations.length  ? 
+      <div>
+        <h3>Asientos Libres</h3>
+        <p>Fila A: {freeSeats(rowA)}</p>
+        <p>Fila B: {freeSeats(rowB)}</p>
+        <p>Fila C: {freeSeats(rowC)}</p>
+        <p>Fila D: {freeSeats(rowD)}</p>
+      </div>:
+      row && <p>Todos los asientos estan disponibles</p>
+      }
       <form onSubmit={handleSubmit}>
         <FormControl fullWidth margin="dense">
           <InputLabel>Sala</InputLabel>
           <Select
             value={room}
             label="Sala"
-            onChange={(e) => setRoom(e.target.value)}
+            onChange={(e) => handleRooms(e.target.value)}
           >
             {rooms.length && rooms.map(room => {
               return (
