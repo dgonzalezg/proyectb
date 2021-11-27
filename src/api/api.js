@@ -21,3 +21,8 @@ export const createReservation = async (payload) => {
   const {data} = await axios.post(`${url}/reservations`, payload)
   return data;
 }
+
+export const getReservations = async (payload) => {
+  const {data} = await axios.get(`${url}/reservations`)
+  return data.filter(reservation => reservation.show_id === payload);
+}
