@@ -31,13 +31,23 @@ describe("register movie", () => {
         cy.get('#end_day').type(dateFinish);
         cy.get('.MuiLoadingButton-root').click()
         /* ==== End Cypress Studio ==== */
+        cy.wait(1000)
     })
+})
+
+
+describe("saving movie", () => {
     it("saves the movie in the database", () => {
     cy.request({
         method: 'GET',
         url : 'https://testing-proyecto-b-backend.herokuapp.com/movies',
     }).then((res)=>{
-        expect(((res.body).pop()).name).to.eq("Harry potter")
+        var objeto = (res.body).pop()
+        expect((objeto).name).to.eq("Harry potter")
+        cy.request({
+            method: 'DELETE',
+            url : `https://testing-proyecto-b-backend.herokuapp.com/movies/${objeto.movie_id}`
+        })
         })
     })
 })
