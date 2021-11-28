@@ -23,6 +23,7 @@ export const createReservation = async (payload) => {
 }
 
 export const getReservations = async (payload) => {
-  const {data} = await axios.get(`${url}/reservations`)
-  return data.filter(reservation => reservation.show_id === payload);
+  const {show_id, date} = payload
+  const {data} = await axios.get(`${url}/reservations/${show_id}/${date}`)
+  return data
 }

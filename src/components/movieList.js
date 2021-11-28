@@ -51,7 +51,7 @@ const MovieList  = () => {
         bgcolor: 'wheat',
         padding: '1em 0 1em 0',
         textAlign: 'cener',
-        marginTop: '2em'
+        marginTop: '2em',
       }}
     >
       <h1 id="title">DCCinema</h1>
@@ -62,7 +62,7 @@ const MovieList  = () => {
       >
         Registrar Película
       </Button>
-      {!loading ? <ImageList sx={{ width: 500, height: 450 }}>
+      {!loading ? <ImageList sx={{ width: 500, height: 700 }}>
       <ImageListItem key="Subheader" cols={2}>
         <ListSubheader component="div">Cartelera</ListSubheader>
       </ImageListItem>
