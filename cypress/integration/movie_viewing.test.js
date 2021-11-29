@@ -27,11 +27,12 @@ describe("check title names", () => {
         url : 'https://testing-proyecto-b-backend.herokuapp.com/movies',
     }).then((res)=>{
         // console.log(objeto)
-        var number = 0
-        var objeto = (res.body)[number].name
+        let number = 0
+        // (res.body).forEach(element,index)=>
         cy.get('.MuiImageListItemBar-title').each(($el) => {
+            var objeto = (res.body)[number].name
             expect($el.text()).to.eq(objeto)
-            
+            number += 1
         }
         )
     })
