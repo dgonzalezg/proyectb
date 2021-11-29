@@ -124,6 +124,7 @@ const ReservationForm = () => {
             value={room}
             label="Sala"
             onChange={(e) => setRoom(e.target.value)}
+            id='Sala'
           >
             {rooms.length && rooms.map(room => {
               return (
@@ -151,6 +152,7 @@ const ReservationForm = () => {
             value={row}
             label="Fila"
             onChange={(e)=> setRow(e.target.value)}
+            id='Fila'
           >
             {['A','B','C','D'].map(row => {
               return (
