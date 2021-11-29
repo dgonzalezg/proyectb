@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { useParams } from "react-router-dom";
 import { getMovieShows, createReservation, getReservations } from '../api/api';
 import InputLabel from '@mui/material/InputLabel';
@@ -26,6 +26,8 @@ const ReservationForm = () => {
   const [error, setError] = useState(false)
   const [success, setSuccess] = useState(false)
   const [reservations, setReservations] = useState([])
+  const [preFill, setPreFill] = useState(true);
+
   useEffect(() => {
     getMovieShows(movieId).then(data => {
       const movie = data.filter(movie => movie.movie_id === Number(movieId))
@@ -43,10 +45,14 @@ const ReservationForm = () => {
       setSeats([...seats, name])
     }
   }
-  const handleRooms = (value) => {
-    setRoom(value)
-    getReservations(value[1]).then((data) => {
+  const handleRooms = () => {
+    setPreFill(true)
+    getReservations({
+      show_id: room[1],
+      date: day
+    }).then((data) => {
       setReservations(data)
+      setPreFill(false)
     })
   }
 
@@ -83,11 +89,10 @@ const ReservationForm = () => {
   const rowC = reservations.filter(r => r.row === "C")
   const rowD = reservations.filter(r => r.row === "D")
   const freeSeats = (row) => {
-    console.log(row)
     const occupied = row.map(r => r.seat)
     const free = [...Array(13).keys()].filter(seat => !occupied.includes(`${seat}`)).filter(seat => seat !== 0)
     if (free.length  === 12) {
-      return 'Todos los asientos estan disponibles'
+      return 'Todos los asientos estan disponibles.'
     }
     return free.join(', ')
   }
@@ -110,7 +115,7 @@ const ReservationForm = () => {
         <p>Fila C: {freeSeats(rowC)}</p>
         <p>Fila D: {freeSeats(rowD)}</p>
       </div>:
-      row && <p>Todos los asientos estan disponibles</p>
+      <p>Todos los asientos estan disponibles</p>
       }
       <form onSubmit={handleSubmit}>
         <FormControl fullWidth margin="dense">
@@ -118,9 +123,7 @@ const ReservationForm = () => {
           <Select
             value={room}
             label="Sala"
-            onChange={(e) => handleRooms(e.target.value)}
-            id="Sala"
-            name="Sala"
+            onChange={(e) => setRoom(e.target.value)}
           >
             {rooms.length && rooms.map(room => {
               return (
@@ -128,15 +131,26 @@ const ReservationForm = () => {
               )
             })}
           </Select>
+          <TextField
+              required
+              id="day"
+              label="Escríba el día de la función (YY-MM-DD)"
+              value={day}
+              onChange={(e) => setDay(e.target.value)}
+              margin="dense"
+            />
+            <LoadingButton loading={loading} variant="contained" onClick={handleRooms}>
+              Ver disponibilidad
+          </LoadingButton>
         </FormControl>
+        {!preFill && 
+        <Fragment>
         <FormControl fullWidth margin="dense">
           <InputLabel>Fila</InputLabel>
           <Select
             value={row}
             label="Fila"
             onChange={(e)=> setRow(e.target.value)}
-            id="Fila"
-            name="Fila"
           >
             {['A','B','C','D'].map(row => {
               return (
@@ -161,18 +175,12 @@ const ReservationForm = () => {
           })}
         </FormGroup>
         <div style={{display:'flex',flexDirection:'column'}}>
-          <TextField
-              required
-              id="day"
-              label="Escríba el día de la función (YY-MM-DD)"
-              value={day}
-              onChange={(e) => setDay(e.target.value)}
-              margin="dense"
-            />
+          
           <LoadingButton loading={loading} variant="contained" type="submit">
               Reservar
           </LoadingButton>
         </div>
+        </Fragment>}
       </form>
       <Snackbar
         open={error}

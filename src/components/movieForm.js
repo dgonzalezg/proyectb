@@ -22,7 +22,6 @@ const MovieForm = () => {
 
   const handleShows = ({target}) => {
     const {name} = target;
-    console.log(name)
     const newShows = [...shows]
     if (newShows.includes(name)) {
       setShows(newShows.filter(show => show!== name))
