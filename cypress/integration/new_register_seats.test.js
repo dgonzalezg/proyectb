@@ -1,18 +1,22 @@
-/*describe("save seats", () =>{
+describe("save seats", () =>{
     it("renders usable window to save seats", () => {
         cy.visit("/")
-        cy.get('.MuiImageListItemBar-subtitle > div > :nth-child(2)').click();
-
-
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get(':nth-child(2) > .MuiImageListItemBar-root > .MuiImageListItemBar-titleWrap > .MuiImageListItemBar-subtitle > div > :nth-child(2)').click();
+        /* ==== End Cypress Studio ==== */
         cy.get('[id^=Sala]').click({ multiple: true })
         cy.get('.MuiMenuItem-root').click();
-        cy.get('[id^=Fila]').click({ multiple: true })
-        cy.get('[data-value="D"]').click();
-        cy.get(':nth-child(2) > .MuiCheckbox-root > .PrivateSwitchBase-input').check();
+        /* ==== Generated with Cypress Studio ==== */
         cy.get('#day').clear();
         cy.get('#day').type('2021-10-05');
         cy.get('.MuiLoadingButton-root').click();
-
+        /* ==== End Cypress Studio ==== */
+        cy.get('[id^=Fila]').click({ multiple: true })
+        /* ==== Generated with Cypress Studio ==== */
+        cy.get('[data-value="D"]').click();
+        cy.get(':nth-child(2) > .MuiCheckbox-root > .PrivateSwitchBase-input').check();
+        cy.get('[style="display: flex; flex-direction: column;"] > .MuiLoadingButton-root').click();
+        /* ==== End Cypress Studio ==== */
     });
     
     it("saves the reservation in the database", async () => {
@@ -30,4 +34,4 @@
             })
         })
     })
-})*/
+})
